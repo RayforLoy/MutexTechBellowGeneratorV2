@@ -11,15 +11,17 @@ const importConfigButton = document.getElementById("import-config");
 const exportConfigButton = document.getElementById("export-config");
 const configFileInput = document.getElementById("config-file");
 const languageToggleButton = document.getElementById("language-toggle");
+const contactLink = document.getElementById("contact-link");
 const hintCard = document.getElementById("hint-card");
 const hintArrowOverlay = document.getElementById("hint-arrow-overlay");
 const hintArrowLine = document.getElementById("hint-arrow-line");
 const patternSize = document.getElementById("pattern-size");
+const bellowLength = document.getElementById("bellow-length");
 
 const NS = "http://www.w3.org/2000/svg";
 const CONFIG_STORAGE_KEY = "mutex-tech-bellow-configs-v2";
-const CONFIG_FIELDS = ["wif", "hif", "wof", "hof", "wir", "hir", "wor", "hor", "woo", "odf", "odr", "frhd"];
-const CONFIG_CHECKBOXES = ["enhanceMountFrame", "enableOverlap", "trimOverlapOutside"];
+const CONFIG_FIELDS = ["wif", "hif", "wof", "hof", "wir", "hir", "wor", "hor", "woo", "odf", "odr", "frhd", "srd", "ribCornerRadius"];
+const CONFIG_CHECKBOXES = ["enableSupportRibs", "useRectangularRibs", "useCornerlessRibs", "enhanceMountFrame", "enableOverlap", "trimOverlapOutside"];
 const BUILTIN_CONFIGS = [
   {
     id: "linhof-master-technika",
@@ -38,6 +40,11 @@ const BUILTIN_CONFIGS = [
       odf: 12,
       odr: 100,
       frhd: 8,
+      srd: 0.5,
+      ribCornerRadius: 0.5,
+      enableSupportRibs: false,
+      useRectangularRibs: true,
+      useCornerlessRibs: false,
       enhanceMountFrame: true,
       enableOverlap: true,
       trimOverlapOutside: true,
@@ -81,6 +88,11 @@ const TEXT = {
     fitView: "适应窗口",
     exportSvg: "导出 SVG",
     exportPdf: "导出 PDF",
+    contactMe: "联系我",
+    bellowLength: "皮腔长度",
+    enableSupportRibs: "生成皮腔骨架",
+    useRectangularRibs: "使用矩形骨架",
+    useCornerlessRibs: "使用无角骨架",
     sectionLhs: (index) => `半长 LHS${index + 1}`,
     sectionNos: (index) => `节数 NOS${index + 1}`,
     deleteSection: (index) => `删除第 ${index + 1} 组皮腔节`,
@@ -98,6 +110,8 @@ const TEXT = {
       odf: "前边距 ODF",
       odr: "后边距 ODR",
       frhd: "高度差 FRHD",
+      srd: "骨架边距 SRD",
+      ribCornerRadius: "骨架圆角",
     },
   },
   en: {
@@ -116,6 +130,11 @@ const TEXT = {
     fitView: "Fit view",
     exportSvg: "Export SVG",
     exportPdf: "Export PDF",
+    contactMe: "Contact me",
+    bellowLength: "Bellows length",
+    enableSupportRibs: "Generate support ribs",
+    useRectangularRibs: "Use rectangular ribs",
+    useCornerlessRibs: "Use cornerless ribs",
     sectionLhs: (index) => `Half length LHS${index + 1}`,
     sectionNos: (index) => `Section count NOS${index + 1}`,
     deleteSection: (index) => `Delete section group ${index + 1}`,
@@ -133,6 +152,8 @@ const TEXT = {
       odf: "Front offset ODF",
       odr: "Rear offset ODR",
       frhd: "Height difference FRHD",
+      srd: "Support rib distance SRD",
+      ribCornerRadius: "Rib corner radius",
     },
   },
 };
@@ -185,6 +206,26 @@ const OPTION_HELP = {
   frhd: {
     zh: "前后组高度差，用于旋转侧面上下边，使右侧面满足指定高度差。",
     en: "Front-rear height difference. It rotates side-panel bases to match the requested offset.",
+  },
+  srd: {
+    zh: "骨架与所在小梯形每条边之间的距离。",
+    en: "Distance from each support rib to every edge of its source small trapezoid.",
+  },
+  ribCornerRadius: {
+    zh: "骨架每个角的圆角半径。数值小于等于 0 时不启用圆角。",
+    en: "Corner radius applied to every support rib corner. Values less than or equal to 0 disable rounding.",
+  },
+  enableSupportRibs: {
+    zh: "在每个皮腔节的小梯形内生成黄色骨架线。",
+    en: "Generates yellow support rib outlines inside each small trapezoid of the bellows.",
+  },
+  useRectangularRibs: {
+    zh: "将每节骨架裁剪成矩形，高度保持不变，宽度等于小梯形较短底并与短底对齐。",
+    en: "Clips each rib into a rectangle with the original strip height and the shorter base width aligned to that shorter base.",
+  },
+  useCornerlessRibs: {
+    zh: "将骨架小梯形的腰绕较短底端点向内旋转 45 度，并用长底裁切多余线段。启用后优先于矩形骨架。",
+    en: "Rotates each rib trapezoid leg inward by 45 degrees around the shorter-base endpoint, then trims the excess at the longer base. This overrides rectangular ribs.",
   },
   enhanceMountFrame: {
     zh: "在每个前后粘合框两侧增加与相邻折角法线相关的补强边。",
@@ -305,6 +346,47 @@ function pathString(points) {
   return points.map((p, index) => `${index ? "L" : "M"} ${round(p.x)} ${round(p.y)}`).join(" ");
 }
 
+function roundedPathString(points, radius) {
+  if (radius <= 0 || points.length < 4) {
+    return pathString(points);
+  }
+  const closed = len(sub(points[0], points[points.length - 1])) < 0.001;
+  if (!closed) {
+    return pathString(points);
+  }
+
+  const vertices = points.slice(0, -1);
+  const corners = vertices.map((vertex, index) => {
+    const previous = vertices[(index + vertices.length - 1) % vertices.length];
+    const next = vertices[(index + 1) % vertices.length];
+    const prevVector = sub(previous, vertex);
+    const nextVector = sub(next, vertex);
+    const prevLength = len(prevVector);
+    const nextLength = len(nextVector);
+    const cornerRadius = Math.min(radius, prevLength / 2, nextLength / 2);
+    if (cornerRadius <= 0.001) {
+      return { vertex, inPoint: vertex, outPoint: vertex };
+    }
+    return {
+      vertex,
+      inPoint: add(vertex, mul(unit(prevVector), cornerRadius)),
+      outPoint: add(vertex, mul(unit(nextVector), cornerRadius)),
+    };
+  });
+
+  const commands = [`M ${round(corners[0].outPoint.x)} ${round(corners[0].outPoint.y)}`];
+  for (let index = 1; index < corners.length; index += 1) {
+    const corner = corners[index];
+    commands.push(`L ${round(corner.inPoint.x)} ${round(corner.inPoint.y)}`);
+    commands.push(`Q ${round(corner.vertex.x)} ${round(corner.vertex.y)} ${round(corner.outPoint.x)} ${round(corner.outPoint.y)}`);
+  }
+  const first = corners[0];
+  commands.push(`L ${round(first.inPoint.x)} ${round(first.inPoint.y)}`);
+  commands.push(`Q ${round(first.vertex.x)} ${round(first.vertex.y)} ${round(first.outPoint.x)} ${round(first.outPoint.y)}`);
+  commands.push("Z");
+  return commands.join(" ");
+}
+
 function round(value) {
   return Number.parseFloat(value.toFixed(3));
 }
@@ -412,6 +494,11 @@ function normalizeConfig(source) {
     odf: Math.max(0, num(params.odf, DEFAULT_CONFIG.params.odf)),
     odr: Math.max(0, num(params.odr, DEFAULT_CONFIG.params.odr)),
     frhd: num(params.frhd, DEFAULT_CONFIG.params.frhd),
+    srd: Math.max(0, num(params.srd, DEFAULT_CONFIG.params.srd)),
+    ribCornerRadius: Math.max(0, num(params.ribCornerRadius, DEFAULT_CONFIG.params.ribCornerRadius)),
+    enableSupportRibs: bool(params.enableSupportRibs, DEFAULT_CONFIG.params.enableSupportRibs),
+    useRectangularRibs: bool(params.useRectangularRibs, DEFAULT_CONFIG.params.useRectangularRibs),
+    useCornerlessRibs: bool(params.useCornerlessRibs, DEFAULT_CONFIG.params.useCornerlessRibs),
     enhanceMountFrame: bool(params.enhanceMountFrame, DEFAULT_CONFIG.params.enhanceMountFrame),
     enableOverlap: bool(params.enableOverlap, DEFAULT_CONFIG.params.enableOverlap),
     trimOverlapOutside: bool(params.trimOverlapOutside, DEFAULT_CONFIG.params.trimOverlapOutside),
@@ -531,9 +618,11 @@ function updateStaticLanguage() {
   document.querySelector(".control-section:nth-of-type(5) .section-title span").textContent = t.heightDiff;
   document.querySelector(".status-label").textContent = t.livePreview;
   fitViewButton.textContent = t.fitView;
+  contactLink.textContent = t.contactMe;
   exportSvgButton.textContent = t.exportSvg;
   exportPdfButton.textContent = t.exportPdf;
   addSectionButton.setAttribute("aria-label", t.addSection);
+  document.querySelector(".metric-readout span").textContent = t.bellowLength;
 
   Object.entries(t.optionLabels).forEach(([name, labelText]) => {
     const input = controls.querySelector(`[name="${name}"]`);
@@ -542,6 +631,9 @@ function updateStaticLanguage() {
     }
   });
 
+  setLabelText(controls.querySelector('[name="enableSupportRibs"]').closest("label"), t.enableSupportRibs);
+  setLabelText(controls.querySelector('[name="useRectangularRibs"]').closest("label"), t.useRectangularRibs);
+  setLabelText(controls.querySelector('[name="useCornerlessRibs"]').closest("label"), t.useCornerlessRibs);
   setLabelText(controls.querySelector('[name="enhanceMountFrame"]').closest("label"), t.enhanceMountFrame);
   setLabelText(controls.querySelector('[name="enableOverlap"]').closest("label"), t.enableOverlap);
   setLabelText(controls.querySelector('[name="trimOverlapOutside"]').closest("label"), t.trimOverlapOutside);
@@ -578,6 +670,11 @@ function readParams() {
     odf: Math.max(0, num(data.get("odf"), 12)),
     odr: Math.max(0, num(data.get("odr"), 18)),
     frhd: num(data.get("frhd"), 0),
+    srd: Math.max(0, num(data.get("srd"), 0.5)),
+    ribCornerRadius: Math.max(0, num(data.get("ribCornerRadius"), 0.5)),
+    enableSupportRibs: Boolean(controls.querySelector('[name="enableSupportRibs"]')?.checked),
+    useRectangularRibs: Boolean(controls.querySelector('[name="useRectangularRibs"]')?.checked),
+    useCornerlessRibs: Boolean(controls.querySelector('[name="useCornerlessRibs"]')?.checked),
     enhanceMountFrame: Boolean(controls.querySelector('[name="enhanceMountFrame"]')?.checked),
     enableOverlap: Boolean(controls.querySelector('[name="enableOverlap"]')?.checked),
     trimOverlapOutside: Boolean(controls.querySelector('[name="trimOverlapOutside"]')?.checked),
@@ -676,6 +773,146 @@ function buildTopModule(params) {
   };
 }
 
+function buildSupportRibsForSequences(leftSeq, rightSeq, params, options = {}) {
+  if (!params.enableSupportRibs || params.srd <= 0) {
+    return [];
+  }
+  const ribs = [];
+  for (let index = 0; index < Math.min(leftSeq.length, rightSeq.length) - 1; index += 1) {
+    const cell = [leftSeq[index], rightSeq[index], rightSeq[index + 1], leftSeq[index + 1]];
+    const rib = params.useCornerlessRibs
+      ? cornerlessRibFromCell(cell, params.srd)
+      : params.useRectangularRibs
+      ? rectangularRibFromCell(cell, params.srd)
+      : insetPolygon(cell, params.srd);
+    if (rib.length >= 4) {
+      const shape = polyline([...rib, rib[0]], "support-rib");
+      if (params.ribCornerRadius > 0) {
+        shape.roundRadius = params.ribCornerRadius;
+        shape.preservePath = true;
+      }
+      if (options.mirrorable != null) {
+        shape.mirrorable = Boolean(options.mirrorable);
+      }
+      ribs.push(shape);
+    }
+  }
+  return ribs;
+}
+
+function insetPolygon(points, distance) {
+  const center = centroid(points);
+  const lines = points.map((pointValue, index) => {
+    const next = points[(index + 1) % points.length];
+    let normal = unit(pt(-(next.y - pointValue.y), next.x - pointValue.x));
+    if (dot(normal, sub(center, pointValue)) < 0) {
+      normal = mul(normal, -1);
+    }
+    const offset = mul(normal, distance);
+    return { a: add(pointValue, offset), b: add(next, offset) };
+  });
+
+  const result = [];
+  for (let index = 0; index < lines.length; index += 1) {
+    const previous = lines[(index + lines.length - 1) % lines.length];
+    const current = lines[index];
+    const intersection = lineIntersection(previous.a, previous.b, current.a, current.b);
+    if (!intersection) {
+      return [];
+    }
+    result.push(intersection);
+  }
+  return result.every((pointValue) => Number.isFinite(pointValue.x) && Number.isFinite(pointValue.y)) ? result : [];
+}
+
+function rectangularRibFromCell(points, distance) {
+  const inset = insetPolygon(points, distance);
+  if (inset.length < 4) {
+    return [];
+  }
+  const topStart = inset[0];
+  const topEnd = inset[1];
+  const bottomEnd = inset[2];
+  const bottomStart = inset[3];
+  const topLength = len(sub(topEnd, topStart));
+  const bottomLength = len(sub(bottomEnd, bottomStart));
+  const useTop = topLength <= bottomLength;
+  const baseStart = useTop ? topStart : bottomStart;
+  const baseEnd = useTop ? topEnd : bottomEnd;
+  const otherStart = useTop ? bottomStart : topStart;
+  const otherEnd = useTop ? bottomEnd : topEnd;
+  const baseVector = sub(baseEnd, baseStart);
+  const baseUnit = unit(baseVector);
+  const baseNormal = pt(-baseUnit.y, baseUnit.x);
+  const baseMid = lerp(baseStart, baseEnd, 0.5);
+  const otherMid = lerp(otherStart, otherEnd, 0.5);
+  let heightVector = mul(baseNormal, dot(sub(otherMid, baseMid), baseNormal));
+  if (len(heightVector) < 0.001) {
+    heightVector = sub(otherMid, baseMid);
+  }
+  return [baseStart, baseEnd, add(baseEnd, heightVector), add(baseStart, heightVector)];
+}
+
+function cornerlessRibFromCell(points, distance) {
+  const inset = insetPolygon(points, distance);
+  if (inset.length < 4) {
+    return [];
+  }
+  return cornerlessRibFromInset(inset);
+}
+
+function cornerlessRibFromInset(points) {
+  const topStart = points[0];
+  const topEnd = points[1];
+  const bottomEnd = points[2];
+  const bottomStart = points[3];
+  const topLength = len(sub(topEnd, topStart));
+  const bottomLength = len(sub(bottomEnd, bottomStart));
+  const useTop = topLength <= bottomLength;
+  const center = centroid(points);
+
+  if (useTop) {
+    const leftCut = rotatedLegBaseIntersection(topStart, bottomStart, bottomStart, bottomEnd, center);
+    const rightCut = rotatedLegBaseIntersection(topEnd, bottomEnd, bottomStart, bottomEnd, center);
+    if (!leftCut || !rightCut || len(sub(leftCut, rightCut)) < 0.001) {
+      return points;
+    }
+    return [topStart, topEnd, rightCut, leftCut];
+  }
+
+  const leftCut = rotatedLegBaseIntersection(bottomStart, topStart, topStart, topEnd, center);
+  const rightCut = rotatedLegBaseIntersection(bottomEnd, topEnd, topStart, topEnd, center);
+  if (!leftCut || !rightCut || len(sub(leftCut, rightCut)) < 0.001) {
+    return points;
+  }
+  return [leftCut, rightCut, bottomEnd, bottomStart];
+}
+
+function rotatedLegBaseIntersection(pivot, originalFar, baseStart, baseEnd, center) {
+  const original = sub(originalFar, pivot);
+  if (len(original) < 0.001) {
+    return null;
+  }
+  const towardCenter = unit(sub(center, pivot));
+  const candidates = [rotate(original, Math.PI / 4), rotate(original, -Math.PI / 4)]
+    .sort((a, b) => dot(unit(b), towardCenter) - dot(unit(a), towardCenter));
+
+  for (const candidate of candidates) {
+    const intersection = lineIntersection(pivot, add(pivot, candidate), baseStart, baseEnd);
+    if (intersection && pointOnSegment(intersection, baseStart, baseEnd)) {
+      return intersection;
+    }
+  }
+  return null;
+}
+
+function pointOnSegment(pointValue, a, b) {
+  const segment = sub(b, a);
+  const lengthSq = dot(segment, segment) || 1;
+  const projection = dot(sub(pointValue, a), segment) / lengthSq;
+  return projection >= -0.001 && projection <= 1.001;
+}
+
 function buildFoldSequence(start, end, sectionsData, center) {
   const side = sub(end, start);
   const sideLength = len(side) || 1;
@@ -737,6 +974,8 @@ function normalOuterIntersection(corner, adjacent, outerY) {
 function buildPattern(params) {
   const top = buildTopModule(params);
   const shapes = top.shapes.filter((shape) => !shape.sourceOnly);
+  const topRibs = buildSupportRibsForSequences(top.leftSeq, top.rightSeq, params);
+  shapes.push(...topRibs);
   const rightSide = buildRightSide(params, top);
   const { rsrt, rsrb } = rightSide;
 
@@ -749,11 +988,22 @@ function buildPattern(params) {
     .filter((shape) => shape.kind !== "text" || shape.copyToBottom)
     .map((shape) => ({ ...transformShape(shape, toRightBottom), sourceOnly: false }));
   shapes.push(...rightBottomShapes);
+  shapes.push(...buildSupportRibsForSequences(
+    top.leftSeq.map(toRightBottom),
+    top.rightSeq.map(toRightBottom),
+    params,
+    { mirrorable: false },
+  ));
   shapes.push(textShape("M1 底面右半", toRightBottom(pt(0, top.height / 2)).x, toRightBottom(pt(0, top.height / 2)).y, "label"));
 
   for (let index = 0; index < top.rightSeq.length; index += 1) {
     shapes.push(polyline([top.rightSeq[index], toRightBottom(top.leftSeq[index])], "fold-line"));
   }
+  shapes.push(...buildSupportRibsForSequences(
+    top.rightSeq,
+    top.leftSeq.map(toRightBottom),
+    params,
+  ));
 
   const mirror = (point) => pt(-point.x, point.y);
   const mirrorShapes = shapes
@@ -763,12 +1013,21 @@ function buildPattern(params) {
   shapes.push(textShape("LS 左侧面", -(top.pmrt.x + rsrt.x) / 2 - 20, (top.pmrt.y + top.pmrb.y) / 2, "label"));
 
   const toLeftBottom = (pointValue) => mirror(toRightBottom(pointValue));
+  shapes.push(...buildSupportRibsForSequences(
+    top.leftSeq.map(toLeftBottom),
+    top.rightSeq.map(toLeftBottom),
+    params,
+    { mirrorable: false },
+  ));
   const leftOverlap = buildOverlapBand(params, top, toLeftBottom, "left");
   const rightOverlap = buildOverlapBand(params, top, toRightBottom, "right");
   let outputShapes = shapes;
   if (params.enableOverlap && params.trimOverlapOutside) {
+    const supportShapes = outputShapes.filter((shape) => shape.className === "support-rib");
+    outputShapes = outputShapes.filter((shape) => shape.className !== "support-rib");
     outputShapes = clipShapesToHalfPlane(outputShapes, leftOverlap.clipLine.a, leftOverlap.clipLine.b, pt(0, top.height / 2));
     outputShapes = clipShapesToHalfPlane(outputShapes, rightOverlap.clipLine.a, rightOverlap.clipLine.b, pt(0, top.height / 2));
+    outputShapes.push(...supportShapes);
   }
   if (params.enableOverlap) {
     outputShapes.push(...leftOverlap.shapes, ...rightOverlap.shapes);
@@ -839,6 +1098,11 @@ function buildGuideTargets(params, top, rightSide, toRightBottom, toLeftBottom, 
     ],
     enableOverlap: [leftBandMid, rightBandMid],
     trimOverlapOutside: [leftOverlap.clipLine.a, rightOverlap.clipLine.a],
+    srd: sectionTargets.flat(),
+    ribCornerRadius: sectionTargets.flat(),
+    enableSupportRibs: sectionTargets.flat(),
+    useRectangularRibs: sectionTargets.flat(),
+    useCornerlessRibs: sectionTargets.flat(),
     sectionTargets,
   };
 }
@@ -1089,7 +1353,7 @@ function removeDuplicateLineSegments(shapes) {
   const deduped = [];
 
   shapes.forEach((shape) => {
-    if (shape.kind !== "polyline") {
+    if (shape.kind !== "polyline" || shape.preservePath) {
       deduped.push(shape);
       return;
     }
@@ -1187,6 +1451,7 @@ function renderPattern(keepView = false) {
 
   renderSvg(pattern, currentViewBox);
   patternSize.textContent = `${round(pattern.contentBox.width)} × ${round(pattern.contentBox.height)} mm`;
+  bellowLength.textContent = `${round(pattern.top.height)} mm`;
   if (activeHint) {
     activeHint.targets = hintTargetsForElement(activeHint.element);
     hintTargetIndex %= Math.max(activeHint.targets.length, 1);
@@ -1307,7 +1572,9 @@ function createSvgElement(shape) {
     return element;
   }
   const element = document.createElementNS(NS, "path");
-  element.setAttribute("d", pathString(shape.points));
+  element.setAttribute("d", shape.roundRadius > 0
+    ? roundedPathString(shape.points, shape.roundRadius)
+    : pathString(shape.points));
   element.setAttribute("class", shape.className);
   return element;
 }
@@ -1325,6 +1592,7 @@ function exportStyles() {
     .fold-line{fill:none;stroke:#111827;stroke-width:.55;vector-effect:non-scaling-stroke}
     .mount-line{fill:none;stroke:#111827;stroke-width:.55;vector-effect:non-scaling-stroke}
     .overlap-band{fill:none;stroke:#111827;stroke-width:.55;vector-effect:non-scaling-stroke}
+    .support-rib{fill:none;stroke:#c99700;stroke-width:.385;vector-effect:non-scaling-stroke}
   `;
 }
 
@@ -1334,6 +1602,7 @@ function previewStyles() {
     .fold-line{fill:none;stroke:#fff;stroke-width:.7;vector-effect:non-scaling-stroke}
     .mount-line{fill:none;stroke:#fff;stroke-width:.7;vector-effect:non-scaling-stroke}
     .overlap-band{fill:none;stroke:#fff;stroke-width:.7;vector-effect:non-scaling-stroke}
+    .support-rib{fill:none;stroke:#ffd84d;stroke-width:.49;vector-effect:non-scaling-stroke}
     .reference-line{fill:none;stroke:rgba(255,255,255,.75);stroke-width:.7;stroke-dasharray:5 3;vector-effect:non-scaling-stroke}
     .grid-line{fill:none;stroke:rgba(255,255,255,.12);stroke-width:.25;vector-effect:non-scaling-stroke}
     .label{fill:#a9d8eb;font-size:4.5px;font-weight:700;font-family:Arial,"Microsoft YaHei",sans-serif;paint-order:stroke;stroke:rgba(7,21,37,.9);stroke-width:1.4px;vector-effect:non-scaling-stroke}
@@ -1557,12 +1826,20 @@ function serializeSvg() {
     return "";
   }
   const exportShapes = lastPattern.shapes.filter((shape) => !shape.previewOnly && shape.kind !== "text");
+  const mainShapes = exportShapes.filter((shape) => shape.className !== "support-rib");
+  const supportShapes = exportShapes.filter((shape) => shape.className === "support-rib");
   const exportBox = paddedBounds(exportShapes);
-  const content = exportShapes.map((shape) => createMarkup(shape)).join("\n");
+  const mainContent = mainShapes.map((shape) => createMarkup(shape)).join("\n");
+  const supportContent = supportShapes.map((shape) => createMarkup(shape)).join("\n");
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${round(exportBox.width)}mm" height="${round(exportBox.height)}mm" viewBox="${round(exportBox.x)} ${round(exportBox.y)} ${round(exportBox.width)} ${round(exportBox.height)}">
   <defs><style>${exportStyles()}</style></defs>
-  ${content}
+  <g id="bellow-pattern">
+    ${mainContent}
+  </g>
+  <g id="support-ribs">
+    ${supportContent}
+  </g>
 </svg>`;
 }
 
@@ -1585,7 +1862,8 @@ function createMarkup(shape) {
   if (shape.kind === "text") {
     return `<text class="${shape.className}" x="${round(shape.x)}" y="${round(shape.y)}" text-anchor="middle">${escapeXml(shape.value)}</text>`;
   }
-  return `<path class="${shape.className}" d="${pathString(shape.points)}" />`;
+  const d = shape.roundRadius > 0 ? roundedPathString(shape.points, shape.roundRadius) : pathString(shape.points);
+  return `<path class="${shape.className}" d="${d}" />`;
 }
 
 controls.addEventListener("input", (event) => {

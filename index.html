@@ -59,7 +59,27 @@
                 <span aria-hidden="true">+</span>
               </button>
             </div>
+            <div class="metric-readout">
+              <span>皮腔长度</span>
+              <strong id="bellow-length">0 mm</strong>
+            </div>
             <div id="section-list" class="section-list"></div>
+            <div class="support-controls">
+              <label class="toggle-field">
+                <input name="enableSupportRibs" type="checkbox" />
+                <span>生成皮腔骨架</span>
+              </label>
+              <label>骨架边距 SRD<input name="srd" type="number" min="0" step="0.1" value="0.5" /></label>
+              <label>骨架圆角<input name="ribCornerRadius" type="number" min="0" step="0.1" value="0.5" /></label>
+              <label class="toggle-field">
+                <input name="useRectangularRibs" type="checkbox" checked />
+                <span>使用矩形骨架</span>
+              </label>
+              <label class="toggle-field">
+                <input name="useCornerlessRibs" type="checkbox" />
+                <span>使用无角骨架</span>
+              </label>
+            </div>
           </section>
 
           <section class="control-section">
@@ -110,6 +130,7 @@
             <strong id="pattern-size">0 × 0 mm</strong>
           </div>
           <div class="preview-actions">
+            <a class="ghost-action contact-action" id="contact-link" href="mailto:liuruifangshiwo@gmail.com">联系我</a>
             <button class="ghost-action language-action" type="button" id="language-toggle">简体中文 ↔ English</button>
             <button class="ghost-action" type="button" id="fit-view">适应窗口</button>
           </div>
