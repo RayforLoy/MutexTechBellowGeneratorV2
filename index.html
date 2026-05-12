@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MUTEX TECH Bellow Generator V2</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="tool-panel" aria-label="皮腔参数工具栏">
+        <header class="brand-block">
+          <span class="brand-kicker">MUTEX TECH by Rayfor</span>
+          <h1>Bellow Generator V2</h1>
+        </header>
+
+        <section class="config-panel" aria-label="配置管理">
+          <label class="config-select-label">配置
+            <select id="config-select" aria-label="选择皮腔配置"></select>
+          </label>
+          <div class="config-actions">
+            <button class="compact-action" type="button" id="import-config">导入 JSON</button>
+            <button class="compact-action" type="button" id="export-config">导出 JSON</button>
+          </div>
+          <input id="config-file" type="file" accept="application/json,.json" hidden />
+        </section>
+
+        <form id="controls" class="controls">
+          <section class="control-section">
+            <div class="section-title">
+              <span>前框尺寸</span>
+              <small>Front</small>
+            </div>
+            <div class="grid-fields">
+              <label>内宽 WIF<input name="wif" type="number" min="1" step="0.1" value="95" /></label>
+              <label>内高 HIF<input name="hif" type="number" min="1" step="0.1" value="83.3" /></label>
+              <label>外宽 WOF<input name="wof" type="number" min="1" step="0.1" value="110" /></label>
+              <label>外高 HOF<input name="hof" type="number" min="1" step="0.1" value="110" /></label>
+            </div>
+          </section>
+
+          <section class="control-section">
+            <div class="section-title">
+              <span>后框尺寸</span>
+              <small>Rear</small>
+            </div>
+            <div class="grid-fields">
+              <label>内宽 WIR<input name="wir" type="number" min="1" step="0.1" value="123.7" /></label>
+              <label>内高 HIR<input name="hir" type="number" min="1" step="0.1" value="125.6" /></label>
+              <label>外宽 WOR<input name="wor" type="number" min="1" step="0.1" value="150" /></label>
+              <label>外高 HOR<input name="hor" type="number" min="1" step="0.1" value="150" /></label>
+            </div>
+          </section>
+
+          <section class="control-section">
+            <div class="section-title">
+              <span>节配置</span>
+              <button class="icon-button" type="button" id="add-section" aria-label="添加一组皮腔节">
+                <span aria-hidden="true">+</span>
+              </button>
+            </div>
+            <div id="section-list" class="section-list"></div>
+          </section>
+
+          <section class="control-section">
+            <div class="section-title">
+              <span>粘合带</span>
+              <small>Overlap</small>
+            </div>
+            <div class="grid-fields">
+              <label>粘合宽 WOO<input name="woo" type="number" min="0" step="0.1" value="15" /></label>
+              <label>前边距 ODF<input name="odf" type="number" min="0" step="0.1" value="12" /></label>
+              <label>后边距 ODR<input name="odr" type="number" min="0" step="0.1" value="100" /></label>
+            </div>
+            <label class="toggle-field">
+              <input name="enhanceMountFrame" type="checkbox" checked />
+              <span>增强粘合框</span>
+            </label>
+            <label class="toggle-field">
+              <input name="enableOverlap" type="checkbox" checked />
+              <span>启用粘合带</span>
+            </label>
+            <label class="toggle-field">
+              <input name="trimOverlapOutside" type="checkbox" checked />
+              <span>移除粘合带以外的额外部分</span>
+            </label>
+          </section>
+
+          <section class="control-section">
+            <div class="section-title">
+              <span>高度差</span>
+              <small>Height</small>
+            </div>
+            <div class="grid-fields single-field">
+              <label>高度差 FRHD<input name="frhd" type="number" step="0.1" value="8" /></label>
+            </div>
+          </section>
+        </form>
+
+        <footer class="export-bar">
+          <button class="primary-action" type="button" id="export-svg">导出 SVG</button>
+          <button class="primary-action" type="button" id="export-pdf">导出 PDF</button>
+        </footer>
+      </aside>
+
+      <section class="preview-panel">
+        <div class="preview-toolbar">
+          <div>
+            <span class="status-label">实时矢量预览</span>
+            <strong id="pattern-size">0 × 0 mm</strong>
+          </div>
+          <div class="preview-actions">
+            <button class="ghost-action language-action" type="button" id="language-toggle">简体中文 ↔ English</button>
+            <button class="ghost-action" type="button" id="fit-view">适应窗口</button>
+          </div>
+        </div>
+        <div id="viewport" class="viewport" aria-label="皮腔展开图预览">
+          <svg id="preview-svg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="相机皮腔展开图"></svg>
+        </div>
+      </section>
+    </main>
+
+    <svg id="hint-arrow-overlay" class="hint-arrow-overlay" aria-hidden="true">
+      <defs>
+        <marker id="hint-arrow-head" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z"></path>
+        </marker>
+      </defs>
+      <line id="hint-arrow-line" x1="0" y1="0" x2="0" y2="0"></line>
+    </svg>
+    <div id="hint-card" class="hint-card" role="status" aria-live="polite"></div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
