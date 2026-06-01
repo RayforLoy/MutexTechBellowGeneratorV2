@@ -1,0 +1,28 @@
+# OS/editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+
+# Local editor/project state
+.vscode/
+.idea/
+
+# Logs and temporary files
+*.log
+tmp/
+temp/
+__pycache__/
+
+# Local generated exports
+exports/
+*.pdf
+mutex-tech-bellow-generator-v2.svg
+Mutex_BellowGenV2_*.svg
+
+# Dependency/build folders if tooling is added later
+node_modules/
+dist/
+build/

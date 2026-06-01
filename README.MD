@@ -1,5 +1,18 @@
 # MUTEX TECH Bellow Generator V2
 
+## Changelog
+
+### 2026-06-01
+
+- Added editable project name and unified export filenames.
+- Added built-in config import script with list, delete, rename, and sort.
+- Added minimum bounding rectangle preview/export layer.
+- Added optional rotation by bounding rectangle.
+- Updated `ODF / ODR` signed input behavior; exported configs still store positive offsets.
+- Fixed rear mounting frame height to use the last `LHS` group, not the largest `LHS`.
+
+## 简介
+
 一个用于在线生成相机皮腔展开图的静态网页工具。页面左侧输入尺寸参数，右侧实时生成 SVG 矢量预览，并支持导出 SVG / PDF。
 
 ## 使用方式

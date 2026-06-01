@@ -15,6 +15,9 @@
         </header>
 
         <section class="config-panel" aria-label="配置管理">
+          <label class="config-select-label">项目名称
+            <input id="project-name" autocomplete="off" aria-label="项目名称" />
+          </label>
           <label class="config-select-label">配置
             <select id="config-select" aria-label="选择皮腔配置"></select>
           </label>
@@ -79,6 +82,14 @@
                 <input name="useCornerlessRibs" type="checkbox" />
                 <span>使用无角骨架</span>
               </label>
+              <label class="toggle-field">
+                <input name="showBoundingBox" type="checkbox" />
+                <span>寻找最小外接矩形</span>
+              </label>
+              <label class="toggle-field">
+                <input name="rotateToBoundingBox" type="checkbox" />
+                <span>按矩形旋转</span>
+              </label>
             </div>
           </section>
 
@@ -89,8 +100,8 @@
             </div>
             <div class="grid-fields">
               <label>粘合宽 WOO<input name="woo" type="number" min="0" step="0.1" value="15" /></label>
-              <label>前边距 ODF<input name="odf" type="number" min="0" step="0.1" value="12" /></label>
-              <label>后边距 ODR<input name="odr" type="number" min="0" step="0.1" value="100" /></label>
+              <label>前边距 ODF<input name="odf" type="number" step="0.1" value="12" /></label>
+              <label>后边距 ODR<input name="odr" type="number" step="0.1" value="-100" /></label>
             </div>
             <label class="toggle-field">
               <input name="enhanceMountFrame" type="checkbox" checked />

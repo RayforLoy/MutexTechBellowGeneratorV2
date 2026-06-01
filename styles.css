@@ -210,6 +210,10 @@ input:focus {
   box-shadow: none;
 }
 
+.toggle-field:has(input:disabled) {
+  opacity: 0.48;
+}
+
 .section-list {
   display: grid;
   gap: 10px;

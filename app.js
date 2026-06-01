@@ -6,6 +6,7 @@ const addSectionButton = document.getElementById("add-section");
 const fitViewButton = document.getElementById("fit-view");
 const exportSvgButton = document.getElementById("export-svg");
 const exportPdfButton = document.getElementById("export-pdf");
+const projectNameInput = document.getElementById("project-name");
 const configSelect = document.getElementById("config-select");
 const importConfigButton = document.getElementById("import-config");
 const exportConfigButton = document.getElementById("export-config");
@@ -21,7 +22,7 @@ const bellowLength = document.getElementById("bellow-length");
 const NS = "http://www.w3.org/2000/svg";
 const CONFIG_STORAGE_KEY = "mutex-tech-bellow-configs-v2";
 const CONFIG_FIELDS = ["wif", "hif", "wof", "hof", "wir", "hir", "wor", "hor", "woo", "odf", "odr", "frhd", "srd", "ribCornerRadius"];
-const CONFIG_CHECKBOXES = ["enableSupportRibs", "useRectangularRibs", "useCornerlessRibs", "enhanceMountFrame", "enableOverlap", "trimOverlapOutside"];
+const CONFIG_CHECKBOXES = ["enableSupportRibs", "useRectangularRibs", "useCornerlessRibs", "showBoundingBox", "rotateToBoundingBox", "enhanceMountFrame", "enableOverlap", "trimOverlapOutside"];
 const BUILTIN_CONFIGS = [
   {
     id: "linhof-master-technika",
@@ -45,12 +46,175 @@ const BUILTIN_CONFIGS = [
       enableSupportRibs: false,
       useRectangularRibs: true,
       useCornerlessRibs: false,
+      showBoundingBox: false,
+      rotateToBoundingBox: false,
       enhanceMountFrame: true,
       enableOverlap: true,
       trimOverlapOutside: true,
       sections: [
         { lhs: 6, nos: 4 },
         { lhs: 10.3, nos: 19 },
+      ],
+    },
+  },
+  {
+    id: "sinar-norma-4x5",
+    name: "Sinar Norma 4x5",
+    builtin: true,
+    params: {
+      wif: 98,
+      hif: 99.5,
+      wof: 121,
+      hof: 124,
+      wir: 124,
+      hir: 124,
+      wor: 148,
+      hor: 148,
+      woo: 16,
+      odf: 20,
+      odr: 90,
+      frhd: 0,
+      srd: 0.5,
+      ribCornerRadius: 0.5,
+      enableSupportRibs: false,
+      useRectangularRibs: true,
+      useCornerlessRibs: false,
+      showBoundingBox: false,
+      rotateToBoundingBox: false,
+      enhanceMountFrame: true,
+      enableOverlap: true,
+      trimOverlapOutside: true,
+      sections: [
+        { lhs: 12, nos: 23 },
+      ],
+    },
+  },
+  {
+    id: "tachihara-hope-a",
+    name: "Tachihara Hope A",
+    builtin: true,
+    params: {
+      wif: 90,
+      hif: 93,
+      wof: 121,
+      hof: 124,
+      wir: 203,
+      hir: 209,
+      wor: 240,
+      hor: 240,
+      woo: 16,
+      odf: 20,
+      odr: 90,
+      frhd: 0,
+      srd: 0.5,
+      ribCornerRadius: 0.5,
+      enableSupportRibs: false,
+      useRectangularRibs: true,
+      useCornerlessRibs: false,
+      showBoundingBox: false,
+      rotateToBoundingBox: false,
+      enhanceMountFrame: true,
+      enableOverlap: true,
+      trimOverlapOutside: true,
+      sections: [
+        { lhs: 16, nos: 18 },
+      ],
+    },
+  },
+  {
+    id: "toyo-810m2",
+    name: "TOYO 810M2",
+    builtin: true,
+    params: {
+      wif: 140,
+      hif: 140,
+      wof: 158,
+      hof: 158,
+      wir: 252,
+      hir: 252,
+      wor: 293,
+      hor: 292.9,
+      woo: 16,
+      odf: 30,
+      odr: 200,
+      frhd: 0,
+      srd: 0.5,
+      ribCornerRadius: 0.5,
+      enableSupportRibs: false,
+      useRectangularRibs: true,
+      useCornerlessRibs: false,
+      showBoundingBox: false,
+      rotateToBoundingBox: false,
+      enhanceMountFrame: true,
+      enableOverlap: true,
+      trimOverlapOutside: true,
+      sections: [
+        { lhs: 9.8, nos: 4 },
+        { lhs: 14.7, nos: 30 },
+      ],
+    },
+  },
+  {
+    id: "toyo-field-4-3-4-x-6-1-2",
+    name: "Toyo Field 4 3/4 x 6 1/2",
+    builtin: true,
+    params: {
+      wif: 90,
+      hif: 90,
+      wof: 120,
+      hof: 120,
+      wir: 170,
+      hir: 170,
+      wor: 200,
+      hor: 200,
+      woo: 16,
+      odf: 20,
+      odr: 135,
+      frhd: 0,
+      srd: 0.5,
+      ribCornerRadius: 0.5,
+      enableSupportRibs: false,
+      useRectangularRibs: true,
+      useCornerlessRibs: false,
+      showBoundingBox: false,
+      rotateToBoundingBox: false,
+      enhanceMountFrame: true,
+      enableOverlap: true,
+      trimOverlapOutside: true,
+      sections: [
+        { lhs: 11.5, nos: 18 },
+      ],
+    },
+  },
+  {
+    id: "toyo-vx125",
+    name: "TOYO VX125",
+    builtin: true,
+    params: {
+      wif: 133,
+      hif: 133,
+      wof: 164,
+      hof: 164,
+      wir: 133,
+      hir: 133,
+      wor: 164,
+      hor: 164,
+      woo: 16,
+      odf: 30,
+      odr: 90,
+      frhd: 0,
+      srd: 0.5,
+      ribCornerRadius: 0.5,
+      enableSupportRibs: false,
+      useRectangularRibs: true,
+      useCornerlessRibs: false,
+      showBoundingBox: false,
+      rotateToBoundingBox: false,
+      enhanceMountFrame: true,
+      enableOverlap: true,
+      trimOverlapOutside: true,
+      sections: [
+        { lhs: 25.5, nos: 8 },
       ],
     },
   },
@@ -70,6 +234,8 @@ let hintTargetIndex = 0;
 let hintAnimationFrame = null;
 let hintAnimatedEnd = null;
 let hintAnimationStart = null;
+let currentProjectName = DEFAULT_CONFIG.name;
+let projectNameEdited = false;
 
 const TEXT = {
   zh: {
@@ -93,6 +259,8 @@ const TEXT = {
     enableSupportRibs: "生成皮腔骨架",
     useRectangularRibs: "使用矩形骨架",
     useCornerlessRibs: "使用无角骨架",
+    showBoundingBox: "寻找最小外接矩形",
+    rotateToBoundingBox: "按矩形旋转",
     sectionLhs: (index) => `半长 LHS${index + 1}`,
     sectionNos: (index) => `节数 NOS${index + 1}`,
     deleteSection: (index) => `删除第 ${index + 1} 组皮腔节`,
@@ -135,6 +303,8 @@ const TEXT = {
     enableSupportRibs: "Generate support ribs",
     useRectangularRibs: "Use rectangular ribs",
     useCornerlessRibs: "Use cornerless ribs",
+    showBoundingBox: "Find minimum bounding rectangle",
+    rotateToBoundingBox: "Rotate by rectangle",
     sectionLhs: (index) => `Half length LHS${index + 1}`,
     sectionNos: (index) => `Section count NOS${index + 1}`,
     deleteSection: (index) => `Delete section group ${index + 1}`,
@@ -227,6 +397,14 @@ const OPTION_HELP = {
     zh: "将骨架小梯形的腰绕较短底端点向内旋转 45 度，并用长底裁切多余线段。启用后优先于矩形骨架。",
     en: "Rotates each rib trapezoid leg inward by 45 degrees around the shorter-base endpoint, then trims the excess at the longer base. This overrides rectangular ribs.",
   },
+  showBoundingBox: {
+    zh: "计算真实展开图线条的最小外接矩形，绘制矩形并标注宽高尺寸。",
+    en: "Calculates the minimum bounding rectangle for the actual pattern lines, then draws and labels its width and height.",
+  },
+  rotateToBoundingBox: {
+    zh: "启用最小外接矩形后可用。自动旋转展开图，使矩形长边竖直、短边水平。",
+    en: "Available when the minimum bounding rectangle is enabled. Rotates the pattern so the rectangle's long edge is vertical and short edge is horizontal.",
+  },
   enhanceMountFrame: {
     zh: "在每个前后粘合框两侧增加与相邻折角法线相关的补强边。",
     en: "Adds reinforcement edges on both sides of every mounting frame using adjacent-fold normals.",
@@ -295,6 +473,24 @@ function bool(value, fallback = false) {
   return Boolean(value);
 }
 
+function positiveOffset(value) {
+  return Math.abs(num(value, 0));
+}
+
+function negativeDisplayOffset(value, edgeLength, overlapWidth) {
+  const leftOffset = positiveOffset(value);
+  const rightVisibleOffset = Math.max(0, num(edgeLength, 0) - leftOffset - Math.max(0, num(overlapWidth, 0)));
+  return rightVisibleOffset === 0 ? 0 : -round(rightVisibleOffset);
+}
+
+function storedOffsetFromSigned(value, edgeLength, overlapWidth) {
+  const distance = num(value, 0);
+  if (distance < 0) {
+    return Math.max(0, num(edgeLength, 0) - Math.abs(distance) - Math.max(0, num(overlapWidth, 0)));
+  }
+  return positiveOffset(distance);
+}
+
 function pt(x, y) {
   return { x, y };
 }
@@ -336,6 +532,10 @@ function rotate(v, angle) {
   const c = Math.cos(angle);
   const s = Math.sin(angle);
   return pt(v.x * c - v.y * s, v.x * s + v.y * c);
+}
+
+function rotateAround(pointValue, angle, origin = pt(0, 0)) {
+  return add(origin, rotate(sub(pointValue, origin), angle));
 }
 
 function pointString(points) {
@@ -417,14 +617,37 @@ function loadUserConfigs() {
       return [];
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed.map(normalizeConfig).filter(Boolean) : [];
+    return Array.isArray(parsed) ? dedupeUserConfigs(parsed.map(normalizeConfig).filter(Boolean)) : [];
   } catch {
     return [];
   }
 }
 
+function normalizeConfigName(name) {
+  return String(name || "")
+    .trim()
+    .replace(/^<+/, "")
+    .replace(/>+$/, "")
+    .trim();
+}
+
+function dedupeUserConfigs(configs) {
+  const builtinNames = new Set(BUILTIN_CONFIGS.map((config) => normalizeConfigName(config.name).toLowerCase()));
+  const seenNames = new Set();
+  return configs.filter((config) => {
+    config.name = normalizeConfigName(config.name);
+    const key = config.name.toLowerCase();
+    if (!key || builtinNames.has(key) || seenNames.has(key)) {
+      return false;
+    }
+    seenNames.add(key);
+    return true;
+  });
+}
+
 function saveUserConfigs() {
   try {
+    userConfigs = dedupeUserConfigs(userConfigs);
     window.localStorage?.setItem(CONFIG_STORAGE_KEY, JSON.stringify(userConfigs));
   } catch {
     // Local storage can be unavailable in private browsing or file sandbox contexts.
@@ -440,17 +663,29 @@ function renderConfigOptions(selectedId = DEFAULT_CONFIG.id) {
   allConfigs().forEach((config) => {
     const option = document.createElement("option");
     option.value = config.id;
-    option.textContent = config.builtin ? `<${config.name}>` : config.name;
+    option.textContent = normalizeConfigName(config.name);
     configSelect.appendChild(option);
   });
   configSelect.value = selectedId;
 }
 
-function applyConfig(config) {
+function setProjectName(name, edited = false) {
+  currentProjectName = edited
+    ? String(name ?? "")
+    : normalizeConfigName(name) || DEFAULT_CONFIG.name;
+  projectNameEdited = edited;
+  if (projectNameInput) {
+    projectNameInput.value = currentProjectName;
+  }
+}
+
+function applyConfig(config, options = {}) {
   CONFIG_FIELDS.forEach((field) => {
     const input = controls.querySelector(`[name="${field}"]`);
     if (input) {
-      input.value = config.params[field];
+      input.value = field === "odr"
+        ? negativeDisplayOffset(config.params[field], config.params.wir, config.params.woo)
+        : config.params[field];
     }
   });
   CONFIG_CHECKBOXES.forEach((field) => {
@@ -460,17 +695,23 @@ function applyConfig(config) {
     }
   });
   sections = cloneSections(config.params.sections);
+  if (!options.keepProjectName) {
+    setProjectName(config.name, false);
+  }
   renderSectionRows();
+  syncBoundingBoxControls();
   renderPattern();
 }
 
 function currentConfigPayload() {
-  const selected = allConfigs().find((config) => config.id === configSelect.value) || DEFAULT_CONFIG;
+  const params = readParams();
+  params.odf = positiveOffset(params.odf);
+  params.odr = storedOffsetFromSigned(params.odr, params.wir, params.woo);
   return {
     version: 1,
-    name: selected.name,
+    name: currentProjectName,
     units: "mm",
-    params: readParams(),
+    params,
   };
 }
 
@@ -491,20 +732,22 @@ function normalizeConfig(source) {
     wor: Math.max(1, num(params.wor, DEFAULT_CONFIG.params.wor)),
     hor: Math.max(1, num(params.hor, DEFAULT_CONFIG.params.hor)),
     woo: Math.max(0, num(params.woo, DEFAULT_CONFIG.params.woo)),
-    odf: Math.max(0, num(params.odf, DEFAULT_CONFIG.params.odf)),
-    odr: Math.max(0, num(params.odr, DEFAULT_CONFIG.params.odr)),
+    odf: positiveOffset(num(params.odf, DEFAULT_CONFIG.params.odf)),
+    odr: positiveOffset(num(params.odr, DEFAULT_CONFIG.params.odr)),
     frhd: num(params.frhd, DEFAULT_CONFIG.params.frhd),
     srd: Math.max(0, num(params.srd, DEFAULT_CONFIG.params.srd)),
     ribCornerRadius: Math.max(0, num(params.ribCornerRadius, DEFAULT_CONFIG.params.ribCornerRadius)),
     enableSupportRibs: bool(params.enableSupportRibs, DEFAULT_CONFIG.params.enableSupportRibs),
     useRectangularRibs: bool(params.useRectangularRibs, DEFAULT_CONFIG.params.useRectangularRibs),
     useCornerlessRibs: bool(params.useCornerlessRibs, DEFAULT_CONFIG.params.useCornerlessRibs),
+    showBoundingBox: bool(params.showBoundingBox, DEFAULT_CONFIG.params.showBoundingBox),
+    rotateToBoundingBox: bool(params.rotateToBoundingBox, DEFAULT_CONFIG.params.rotateToBoundingBox),
     enhanceMountFrame: bool(params.enhanceMountFrame, DEFAULT_CONFIG.params.enhanceMountFrame),
     enableOverlap: bool(params.enableOverlap, DEFAULT_CONFIG.params.enableOverlap),
     trimOverlapOutside: bool(params.trimOverlapOutside, DEFAULT_CONFIG.params.trimOverlapOutside),
     sections: cloneSections(sectionsValue.length ? sectionsValue : DEFAULT_CONFIG.params.sections),
   };
-  const name = String(source?.name || "Imported configuration").trim() || "Imported configuration";
+  const name = normalizeConfigName(source?.name || "Imported configuration") || "Imported configuration";
 
   return {
     id: source?.id && !BUILTIN_CONFIGS.some((config) => config.id === source.id)
@@ -531,7 +774,52 @@ function uniqueConfigId(name) {
 }
 
 function safeFilename(name) {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "bellow-config";
+  const cleaned = String(name || "")
+    .trim()
+    .replace(/[\\/:*?"<>|]+/g, "_")
+    .replace(/\s+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "");
+  return cleaned || "Project";
+}
+
+function exportTimestamp(date = new Date()) {
+  const pad = (value) => String(value).padStart(2, "0");
+  return [
+    date.getFullYear(),
+    pad(date.getMonth() + 1),
+    pad(date.getDate()),
+    "_",
+    pad(date.getHours()),
+    pad(date.getMinutes()),
+    pad(date.getSeconds()),
+  ].join("");
+}
+
+function exportFilename(projectName, fileFormat) {
+  return `Mutex_BellowGenV2_${safeFilename(projectName)}_${exportTimestamp()}.${fileFormat}`;
+}
+
+function requestProjectNameForExport() {
+  if (projectNameEdited) {
+    const cleanedName = normalizeConfigName(currentProjectName);
+    if (cleanedName) {
+      currentProjectName = cleanedName;
+      projectNameInput.value = currentProjectName;
+      return currentProjectName;
+    }
+  }
+  const enteredName = window.prompt?.("请输入项目名称", currentProjectName);
+  if (enteredName == null) {
+    return null;
+  }
+  setProjectName(normalizeConfigName(enteredName), true);
+  return currentProjectName;
+}
+
+function findConfigByProjectName(name) {
+  const normalizedName = String(name || "").trim().toLowerCase();
+  return allConfigs().find((config) => config.name.toLowerCase() === normalizedName) || null;
 }
 
 function setLabelText(label, text) {
@@ -595,6 +883,10 @@ function annotateOptionControls() {
   if (configLabel) {
     configLabel.dataset.param = "configSelect";
   }
+  const projectNameLabel = projectNameInput.closest("label");
+  if (projectNameLabel) {
+    projectNameLabel.dataset.param = "configSelect";
+  }
   importConfigButton.dataset.hint = "importConfig";
   exportConfigButton.dataset.hint = "exportConfig";
   addSectionButton.dataset.hint = "addSection";
@@ -608,7 +900,9 @@ function updateStaticLanguage() {
   if (document.documentElement) {
     document.documentElement.lang = currentLang === "zh" ? "zh-CN" : "en";
   }
+  setLabelText(projectNameInput.closest("label"), currentLang === "zh" ? "项目名称" : "Project name");
   setLabelText(configSelect.closest("label"), t.config);
+  projectNameInput.setAttribute("aria-label", currentLang === "zh" ? "项目名称" : "Project name");
   importConfigButton.textContent = t.importConfig;
   exportConfigButton.textContent = t.exportConfig;
   document.querySelector(".control-section:nth-of-type(1) .section-title span").textContent = t.frontSize;
@@ -634,6 +928,8 @@ function updateStaticLanguage() {
   setLabelText(controls.querySelector('[name="enableSupportRibs"]').closest("label"), t.enableSupportRibs);
   setLabelText(controls.querySelector('[name="useRectangularRibs"]').closest("label"), t.useRectangularRibs);
   setLabelText(controls.querySelector('[name="useCornerlessRibs"]').closest("label"), t.useCornerlessRibs);
+  setLabelText(controls.querySelector('[name="showBoundingBox"]').closest("label"), t.showBoundingBox);
+  setLabelText(controls.querySelector('[name="rotateToBoundingBox"]').closest("label"), t.rotateToBoundingBox);
   setLabelText(controls.querySelector('[name="enhanceMountFrame"]').closest("label"), t.enhanceMountFrame);
   setLabelText(controls.querySelector('[name="enableOverlap"]').closest("label"), t.enableOverlap);
   setLabelText(controls.querySelector('[name="trimOverlapOutside"]').closest("label"), t.trimOverlapOutside);
@@ -667,19 +963,33 @@ function readParams() {
     wor: Math.max(1, num(data.get("wor"), 195)),
     hor: Math.max(1, num(data.get("hor"), 155)),
     woo: Math.max(0, num(data.get("woo"), 14)),
-    odf: Math.max(0, num(data.get("odf"), 12)),
-    odr: Math.max(0, num(data.get("odr"), 18)),
+    odf: num(data.get("odf"), 12),
+    odr: num(data.get("odr"), 18),
     frhd: num(data.get("frhd"), 0),
     srd: Math.max(0, num(data.get("srd"), 0.5)),
     ribCornerRadius: Math.max(0, num(data.get("ribCornerRadius"), 0.5)),
     enableSupportRibs: Boolean(controls.querySelector('[name="enableSupportRibs"]')?.checked),
     useRectangularRibs: Boolean(controls.querySelector('[name="useRectangularRibs"]')?.checked),
     useCornerlessRibs: Boolean(controls.querySelector('[name="useCornerlessRibs"]')?.checked),
+    showBoundingBox: Boolean(controls.querySelector('[name="showBoundingBox"]')?.checked),
+    rotateToBoundingBox: Boolean(controls.querySelector('[name="rotateToBoundingBox"]')?.checked),
     enhanceMountFrame: Boolean(controls.querySelector('[name="enhanceMountFrame"]')?.checked),
     enableOverlap: Boolean(controls.querySelector('[name="enableOverlap"]')?.checked),
     trimOverlapOutside: Boolean(controls.querySelector('[name="trimOverlapOutside"]')?.checked),
     sections: cleanSections.length ? cleanSections : [{ lhs: 1, nos: 1 }],
   };
+}
+
+function syncBoundingBoxControls() {
+  const showInput = controls.querySelector('[name="showBoundingBox"]');
+  const rotateInput = controls.querySelector('[name="rotateToBoundingBox"]');
+  if (!showInput || !rotateInput) {
+    return;
+  }
+  rotateInput.disabled = !showInput.checked;
+  if (!showInput.checked && rotateInput.checked) {
+    rotateInput.checked = false;
+  }
 }
 
 function buildTopModule(params) {
@@ -689,7 +999,7 @@ function buildTopModule(params) {
   const effectiveLeg = Math.max(totalLeg, minLeg);
   const height = Math.sqrt(Math.max(0.01, effectiveLeg * effectiveLeg - halfDelta * halfDelta));
   const firstLhs = params.sections[0].lhs;
-  const maxLhs = Math.max(...params.sections.map((section) => section.lhs));
+  const rearLhs = params.sections[params.sections.length - 1].lhs;
 
   const mtl = pt(-params.wif / 2, 0);
   const mtr = pt(params.wif / 2, 0);
@@ -703,7 +1013,7 @@ function buildTopModule(params) {
 
   const shapes = [];
   shapes.push(polyline([mtl, pt(mtl.x, -firstLhs), pt(mtr.x, -firstLhs), mtr], "cut-line"));
-  shapes.push(polyline([mbl, pt(mbl.x, height + maxLhs), pt(mbr.x, height + maxLhs), mbr], "cut-line"));
+  shapes.push(polyline([mbl, pt(mbl.x, height + rearLhs), pt(mbr.x, height + rearLhs), mbr], "cut-line"));
   if (params.enhanceMountFrame) {
     shapes.push(...buildMountFrameEnhancements({
       leftCorner: mtl,
@@ -715,7 +1025,7 @@ function buildTopModule(params) {
     shapes.push(...buildMountFrameEnhancements({
       leftCorner: mbl,
       rightCorner: mbr,
-      outerY: height + maxLhs,
+      outerY: height + rearLhs,
       leftAdjacent: leftSeq[leftSeq.length - 2],
       rightAdjacent: rightSeq[rightSeq.length - 2],
     }));
@@ -757,7 +1067,7 @@ function buildTopModule(params) {
     totalLeg,
     height,
     firstLhs,
-    maxLhs,
+    rearLhs,
     mtl,
     mtr,
     mbl,
@@ -1033,6 +1343,8 @@ function buildPattern(params) {
     outputShapes.push(...leftOverlap.shapes, ...rightOverlap.shapes);
   }
   outputShapes = removeDuplicateLineSegments(outputShapes);
+  const boundingResult = applyBoundingBoxOptions(outputShapes, params);
+  outputShapes = boundingResult.shapes;
 
   const contentBox = getBounds(outputShapes);
   const padX = Math.max(contentBox.width * 0.1, 10);
@@ -1046,7 +1358,7 @@ function buildPattern(params) {
 
   const guideTargets = buildGuideTargets(params, top, rightSide, toRightBottom, toLeftBottom, leftOverlap, rightOverlap);
 
-  return { shapes: outputShapes, contentBox, viewBox, params, rightSide, top, guideTargets };
+  return { shapes: outputShapes, contentBox, viewBox, params, rightSide, top, guideTargets, boundingRectangle: boundingResult.boundingRectangle };
 }
 
 function buildGuideTargets(params, top, rightSide, toRightBottom, toLeftBottom, leftOverlap, rightOverlap) {
@@ -1076,8 +1388,8 @@ function buildGuideTargets(params, top, rightSide, toRightBottom, toLeftBottom, 
     hir: [rightRear, leftRear],
     wof: [toRightBottom(pt(0, -top.firstLhs)), toLeftBottom(pt(0, -top.firstLhs))],
     hof: [toRightBottom(pt(top.mtr.x, -top.firstLhs / 2)), toLeftBottom(pt(top.mtl.x, -top.firstLhs / 2))],
-    wor: [toRightBottom(pt(0, top.height + top.maxLhs)), toLeftBottom(pt(0, top.height + top.maxLhs))],
-    hor: [toRightBottom(pt(top.mbr.x, top.height + top.maxLhs / 2)), toLeftBottom(pt(top.mbl.x, top.height + top.maxLhs / 2))],
+    wor: [toRightBottom(pt(0, top.height + top.rearLhs)), toLeftBottom(pt(0, top.height + top.rearLhs))],
+    hor: [toRightBottom(pt(top.mbr.x, top.height + top.rearLhs / 2)), toLeftBottom(pt(top.mbl.x, top.height + top.rearLhs / 2))],
     woo: [leftBandMid, rightBandMid],
     odf: [leftOverlap.front, rightOverlap.front],
     odr: [leftOverlap.rear, rightOverlap.rear],
@@ -1103,6 +1415,8 @@ function buildGuideTargets(params, top, rightSide, toRightBottom, toLeftBottom, 
     enableSupportRibs: sectionTargets.flat(),
     useRectangularRibs: sectionTargets.flat(),
     useCornerlessRibs: sectionTargets.flat(),
+    showBoundingBox: sectionTargets.flat(),
+    rotateToBoundingBox: sectionTargets.flat(),
     sectionTargets,
   };
 }
@@ -1290,13 +1604,13 @@ function buildOverlapBand(params, top, transform, side) {
     ? pt(top.mtr.x, -top.firstLhs)
     : pt(top.mtl.x, -top.firstLhs));
   const rearOuterStart = transform(useTransformedLeftVertex
-    ? pt(top.mbl.x, top.height + top.maxLhs)
-    : pt(top.mbr.x, top.height + top.maxLhs));
+    ? pt(top.mbl.x, top.height + top.rearLhs)
+    : pt(top.mbr.x, top.height + top.rearLhs));
   const rearOuterEnd = transform(useTransformedLeftVertex
-    ? pt(top.mbr.x, top.height + top.maxLhs)
-    : pt(top.mbl.x, top.height + top.maxLhs));
-  const port = pointAtDistance(topStart, topEnd, params.odf);
-  const porb = pointAtDistance(bottomStart, bottomEnd, params.odr);
+    ? pt(top.mbr.x, top.height + top.rearLhs)
+    : pt(top.mbl.x, top.height + top.rearLhs));
+  const port = pointAtSignedDistance(topStart, topEnd, signedOverlapDistance(params.odf, params.woo));
+  const porb = pointAtSignedDistance(bottomStart, bottomEnd, signedOverlapDistance(params.odr, params.woo));
   const line = sub(porb, port);
   const direction = unit(line);
   let normal = unit(pt(line.y, -line.x));
@@ -1332,6 +1646,21 @@ function buildOverlapBand(params, top, transform, side) {
 function pointAtDistance(a, b, distance) {
   const length = len(sub(b, a)) || 1;
   return lerp(a, b, clamp(distance / length, 0, 1));
+}
+
+function pointAtSignedDistance(a, b, distance) {
+  if (distance < 0) {
+    return pointAtDistance(b, a, Math.abs(distance));
+  }
+  return pointAtDistance(a, b, distance);
+}
+
+function signedOverlapDistance(value, overlapWidth) {
+  const distance = num(value, 0);
+  if (distance < 0) {
+    return -(Math.abs(distance) + Math.max(0, num(overlapWidth, 0)));
+  }
+  return distance;
 }
 
 function polyline(points, className) {
@@ -1439,6 +1768,144 @@ function getBounds(shapes) {
     width: Math.max(1, maxX - minX),
     height: Math.max(1, maxY - minY),
   };
+}
+
+function shapePoints(shapes, options = {}) {
+  const points = [];
+  shapes.forEach((shape) => {
+    if (options.exportOnly && (shape.previewOnly || shape.kind === "text")) {
+      return;
+    }
+    if (shape.kind === "text") {
+      points.push(pt(shape.x, shape.y));
+      return;
+    }
+    points.push(...shape.points);
+  });
+  return points;
+}
+
+function convexHull(points) {
+  const unique = [...new Map(points.map((pointValue) => [linePointKey(pointValue), pointValue])).values()]
+    .sort((a, b) => a.x === b.x ? a.y - b.y : a.x - b.x);
+  if (unique.length <= 1) {
+    return unique;
+  }
+
+  const lower = [];
+  unique.forEach((pointValue) => {
+    while (lower.length >= 2 && cross(sub(lower[lower.length - 1], lower[lower.length - 2]), sub(pointValue, lower[lower.length - 1])) <= 0) {
+      lower.pop();
+    }
+    lower.push(pointValue);
+  });
+
+  const upper = [];
+  [...unique].reverse().forEach((pointValue) => {
+    while (upper.length >= 2 && cross(sub(upper[upper.length - 1], upper[upper.length - 2]), sub(pointValue, upper[upper.length - 1])) <= 0) {
+      upper.pop();
+    }
+    upper.push(pointValue);
+  });
+
+  lower.pop();
+  upper.pop();
+  return lower.concat(upper);
+}
+
+function minimumBoundingRectangle(points) {
+  const hull = convexHull(points);
+  if (hull.length < 2) {
+    const pointValue = hull[0] || pt(0, 0);
+    return {
+      angle: 0,
+      width: 1,
+      height: 1,
+      area: 1,
+      center: pointValue,
+      corners: [pointValue, add(pointValue, pt(1, 0)), add(pointValue, pt(1, 1)), add(pointValue, pt(0, 1)), pointValue],
+    };
+  }
+
+  let best = null;
+  for (let index = 0; index < hull.length; index += 1) {
+    const edge = sub(hull[(index + 1) % hull.length], hull[index]);
+    if (len(edge) < 0.001) {
+      continue;
+    }
+    const angle = Math.atan2(edge.y, edge.x);
+    const rotated = hull.map((pointValue) => rotate(pointValue, -angle));
+    const box = boundsFromPoints(rotated);
+    const area = box.width * box.height;
+    if (!best || area < best.area) {
+      const corners = [
+        pt(box.x, box.y),
+        pt(box.x + box.width, box.y),
+        pt(box.x + box.width, box.y + box.height),
+        pt(box.x, box.y + box.height),
+      ].map((pointValue) => rotate(pointValue, angle));
+      best = {
+        angle,
+        width: box.width,
+        height: box.height,
+        area,
+        center: rotate(pt(box.x + box.width / 2, box.y + box.height / 2), angle),
+        corners: [...corners, corners[0]],
+      };
+    }
+  }
+  return best;
+}
+
+function boundsFromPoints(points) {
+  const xs = points.map((pointValue) => pointValue.x);
+  const ys = points.map((pointValue) => pointValue.y);
+  const minX = Math.min(...xs);
+  const maxX = Math.max(...xs);
+  const minY = Math.min(...ys);
+  const maxY = Math.max(...ys);
+  return {
+    x: minX,
+    y: minY,
+    width: Math.max(1, maxX - minX),
+    height: Math.max(1, maxY - minY),
+  };
+}
+
+function rotateShapesToBoundingBox(shapes, rectangle) {
+  const longAngle = rectangle.width >= rectangle.height ? rectangle.angle : rectangle.angle + Math.PI / 2;
+  const rotation = Math.PI / 2 - longAngle;
+  return shapes.map((shape) => transformShape(shape, (pointValue) => rotateAround(pointValue, rotation, rectangle.center)));
+}
+
+function boundingBoxShapes(rectangle) {
+  const widthLabel = `${round(rectangle.width)} mm`;
+  const heightLabel = `${round(rectangle.height)} mm`;
+  const topMid = lerp(rectangle.corners[0], rectangle.corners[1], 0.5);
+  const rightMid = lerp(rectangle.corners[1], rectangle.corners[2], 0.5);
+  const topNormal = mul(unit(sub(rectangle.corners[0], rectangle.center)), 8);
+  const rightNormal = mul(unit(sub(rectangle.corners[2], rectangle.center)), 8);
+  return [
+    { ...polyline(rectangle.corners, "bounding-box"), mirrorable: false, exportText: true },
+    { ...textShape(widthLabel, add(topMid, topNormal).x, add(topMid, topNormal).y, "bounding-label"), exportText: true },
+    { ...textShape(heightLabel, add(rightMid, rightNormal).x, add(rightMid, rightNormal).y, "bounding-label"), exportText: true },
+  ];
+}
+
+function applyBoundingBoxOptions(shapes, params) {
+  let outputShapes = shapes;
+  let boundingRectangle = null;
+  if (params.showBoundingBox || params.rotateToBoundingBox) {
+    boundingRectangle = minimumBoundingRectangle(shapePoints(outputShapes, { exportOnly: true }));
+  }
+  if (params.showBoundingBox && params.rotateToBoundingBox && boundingRectangle) {
+    outputShapes = rotateShapesToBoundingBox(outputShapes, boundingRectangle);
+    boundingRectangle = minimumBoundingRectangle(shapePoints(outputShapes, { exportOnly: true }));
+  }
+  if (params.showBoundingBox && boundingRectangle) {
+    outputShapes = [...outputShapes, ...boundingBoxShapes(boundingRectangle)];
+  }
+  return { shapes: outputShapes, boundingRectangle };
 }
 
 function renderPattern(keepView = false) {
@@ -1593,6 +2060,8 @@ function exportStyles() {
     .mount-line{fill:none;stroke:#111827;stroke-width:.55;vector-effect:non-scaling-stroke}
     .overlap-band{fill:none;stroke:#111827;stroke-width:.55;vector-effect:non-scaling-stroke}
     .support-rib{fill:none;stroke:#c99700;stroke-width:.385;vector-effect:non-scaling-stroke}
+    .bounding-box{fill:none;stroke:#dc2626;stroke-width:.75;vector-effect:non-scaling-stroke}
+    .bounding-label{fill:#dc2626;font-size:5px;font-weight:700;font-family:Arial,"Microsoft YaHei",sans-serif;paint-order:stroke;stroke:#fff;stroke-width:1.4px;vector-effect:non-scaling-stroke}
   `;
 }
 
@@ -1603,10 +2072,12 @@ function previewStyles() {
     .mount-line{fill:none;stroke:#fff;stroke-width:.7;vector-effect:non-scaling-stroke}
     .overlap-band{fill:none;stroke:#fff;stroke-width:.7;vector-effect:non-scaling-stroke}
     .support-rib{fill:none;stroke:#ffd84d;stroke-width:.49;vector-effect:non-scaling-stroke}
+    .bounding-box{fill:none;stroke:#ff5a6f;stroke-width:.8;vector-effect:non-scaling-stroke}
     .reference-line{fill:none;stroke:rgba(255,255,255,.75);stroke-width:.7;stroke-dasharray:5 3;vector-effect:non-scaling-stroke}
     .grid-line{fill:none;stroke:rgba(255,255,255,.12);stroke-width:.25;vector-effect:non-scaling-stroke}
     .label{fill:#a9d8eb;font-size:4.5px;font-weight:700;font-family:Arial,"Microsoft YaHei",sans-serif;paint-order:stroke;stroke:rgba(7,21,37,.9);stroke-width:1.4px;vector-effect:non-scaling-stroke}
     .reference-label{fill:#fff;font-size:4px;font-weight:700;font-family:Arial,"Microsoft YaHei",sans-serif;paint-order:stroke;stroke:rgba(7,21,37,.9);stroke-width:1.4px;vector-effect:non-scaling-stroke}
+    .bounding-label{fill:#ff98a6;font-size:5px;font-weight:800;font-family:Arial,"Microsoft YaHei",sans-serif;paint-order:stroke;stroke:rgba(7,21,37,.95);stroke-width:1.5px;vector-effect:non-scaling-stroke}
   `;
 }
 
@@ -1825,12 +2296,14 @@ function serializeSvg() {
   if (!lastPattern) {
     return "";
   }
-  const exportShapes = lastPattern.shapes.filter((shape) => !shape.previewOnly && shape.kind !== "text");
-  const mainShapes = exportShapes.filter((shape) => shape.className !== "support-rib");
+  const exportShapes = lastPattern.shapes.filter((shape) => !shape.previewOnly && (shape.kind !== "text" || shape.exportText));
+  const boundingShapes = exportShapes.filter((shape) => shape.className === "bounding-box" || shape.className === "bounding-label");
+  const mainShapes = exportShapes.filter((shape) => shape.className !== "support-rib" && shape.className !== "bounding-box" && shape.className !== "bounding-label");
   const supportShapes = exportShapes.filter((shape) => shape.className === "support-rib");
   const exportBox = paddedBounds(exportShapes);
   const mainContent = mainShapes.map((shape) => createMarkup(shape)).join("\n");
   const supportContent = supportShapes.map((shape) => createMarkup(shape)).join("\n");
+  const boundingContent = boundingShapes.map((shape) => createMarkup(shape)).join("\n");
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${round(exportBox.width)}mm" height="${round(exportBox.height)}mm" viewBox="${round(exportBox.x)} ${round(exportBox.y)} ${round(exportBox.width)} ${round(exportBox.height)}">
   <defs><style>${exportStyles()}</style></defs>
@@ -1839,6 +2312,9 @@ function serializeSvg() {
   </g>
   <g id="support-ribs">
     ${supportContent}
+  </g>
+  <g id="minimum-bounding-rectangle">
+    ${boundingContent}
   </g>
 </svg>`;
 }
@@ -1871,6 +2347,9 @@ controls.addEventListener("input", (event) => {
   if (target.dataset.section) {
     const index = Number.parseInt(target.dataset.section, 10);
     sections[index][target.dataset.key] = target.value;
+  }
+  if (target.name === "showBoundingBox") {
+    syncBoundingBoxControls();
   }
   renderPattern(true);
 });
@@ -1915,6 +2394,24 @@ configSelect.addEventListener("change", () => {
   applyConfig(config);
 });
 
+projectNameInput.addEventListener("focus", () => {
+  projectNameInput.select();
+});
+
+projectNameInput.addEventListener("input", () => {
+  setProjectName(projectNameInput.value, true);
+});
+
+projectNameInput.addEventListener("change", () => {
+  const matchingConfig = findConfigByProjectName(projectNameInput.value);
+  if (matchingConfig) {
+    configSelect.value = matchingConfig.id;
+    applyConfig(matchingConfig);
+    return;
+  }
+  setProjectName(projectNameInput.value, true);
+});
+
 importConfigButton.addEventListener("click", () => {
   configFileInput.click();
 });
@@ -1946,9 +2443,13 @@ configFileInput.addEventListener("change", () => {
 });
 
 exportConfigButton.addEventListener("click", () => {
+  const projectName = requestProjectNameForExport();
+  if (!projectName) {
+    return;
+  }
   const payload = currentConfigPayload();
   download(
-    `${safeFilename(payload.name)}.json`,
+    exportFilename(projectName, "json"),
     JSON.stringify(payload, null, 2),
     "application/json;charset=utf-8",
   );
@@ -2033,10 +2534,18 @@ viewport.addEventListener("pointercancel", () => {
 });
 
 exportSvgButton.addEventListener("click", () => {
-  download("mutex-tech-bellow-generator-v2.svg", serializeSvg(), "image/svg+xml;charset=utf-8");
+  const projectName = requestProjectNameForExport();
+  if (!projectName) {
+    return;
+  }
+  download(exportFilename(projectName, "svg"), serializeSvg(), "image/svg+xml;charset=utf-8");
 });
 
 exportPdfButton.addEventListener("click", () => {
+  const projectName = requestProjectNameForExport();
+  if (!projectName) {
+    return;
+  }
   const svgText = serializeSvg();
   const printWindow = window.open("", "_blank");
   if (!printWindow) {
@@ -2048,7 +2557,7 @@ exportPdfButton.addEventListener("click", () => {
     <html lang="zh-CN">
       <head>
         <meta charset="UTF-8" />
-        <title>MUTEX TECH Bellow Generator V2 PDF</title>
+        <title>${escapeXml(exportFilename(projectName, "pdf"))}</title>
         <style>
           @page { size: auto; margin: 8mm; }
           body { margin: 0; background: #fff; }
@@ -2066,6 +2575,7 @@ exportPdfButton.addEventListener("click", () => {
 userConfigs = loadUserConfigs();
 renderConfigOptions(DEFAULT_CONFIG.id);
 applyConfig(DEFAULT_CONFIG);
+syncBoundingBoxControls();
 annotateOptionControls();
 updateStaticLanguage();
 window.addEventListener("resize", updateActiveHint);
